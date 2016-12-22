@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
@@ -18,7 +19,6 @@ public class Game {
     public static final char[] vowels = {'a', 'e', 'i', 'o', 'u'};
 
     public static String team = team_and_location[random_team(team_and_location.length)][0];
-
     public static ArrayList<String> description = new ArrayList<>();
 
     public static Scanner scanner_for_loop;
@@ -33,7 +33,6 @@ public class Game {
         int range = max - 1;
         return (int)(Math.random() * range);
     }
-
 
     /**
      * This method finds a location that starts with a given character
@@ -52,6 +51,22 @@ public class Game {
         return "error";
     }
 
+    /**
+     * This method updates a 2D string array to a randomized version. Order within each array is not swapped.
+     *
+     * @param arr a 2D string array to shuffle
+     */
+
+    public static void shuffleArray(String[][] arr) {
+        Random rgen = new Random();
+
+        for (int i = 0; i < arr.length; i++) {
+            int randPos = rgen.nextInt(arr.length);
+            String[] tmp = arr[i];
+            arr[i] = arr[randPos];
+            arr[randPos] = tmp;
+        }
+    }
 
     /**
      * This method creates a description using locations around the country, given an NFL football team
@@ -60,7 +75,7 @@ public class Game {
      */
     public static String team_description(String team) {
 
-        String[] vowel_times = {"one night", "two nights", "three nights", "four nights", "five nights"};
+        String[] vowel_times = {"a night", "two nights", "three nights", "four nights", "five nights"};
         char[] team_char_array = new char[team.length()];
 
 
@@ -70,45 +85,77 @@ public class Game {
             team_char_array[i] = team.charAt(i);
         }
 
-        //testing the char array for validity-- passed
+
+        //Creates syntax agreement for the first character, accommodating "for X nights"
+
+        int first_loop_counter = 0;
+        for(int j = 0; j<5; j++) {
+            if (team_char_array[1] == vowels[j]) {
+                description.add("First I went to " + use_letter(team_char_array[0]));
+            }
+            else {
+                first_loop_counter++;
+            }
+        }
+        if(first_loop_counter == 5)
+            description.add("First I went to " + use_letter(team_char_array[0]) + ",");
 
 
-
-        description.add("First I went to " + use_letter(team_char_array[0]) + ",");
+        //Here begins description syntax arithmetic, starting at i=1 since the first character has already been done.
 
         for (int i = 1; i < team_char_array.length; i++) {
 
-            boolean char_before_letter = true;
-            //if char_before_letter = true after the loop, there is no vowel before this character.
-            for (int j = 0; j <= 4; j++) {
+            boolean cons_before_letter = true;
+            //if cons_before_letter = true after the loop, there is no vowel before this character.
+            for (int j = 0; j < 5; j++) {
                 if (team_char_array[i - 1] == vowels[j])
-                    char_before_letter = false;
+                    cons_before_letter = false;
             }
-            if (char_before_letter) {
-
-                    if (team_char_array[i] == vowels[0]) {
-                        description.add(" for " + vowel_times[0] + ",");
+            if (cons_before_letter) {
+                    int counter = 0;
+                    for (int j = 0; j<5; j++) {
+                        if (team_char_array[i] == vowels[j])
+                            description.add(" for " + vowel_times[j] + ",");
+                        else
+                            counter++;
                     }
-                    else if (team_char_array[i] == vowels[1]) {
-                        description.add(" for " + vowel_times[1] + ",");
-                    }
-                    else if (team_char_array[i] == vowels[2]) {
-                        description.add(" for " + vowel_times[2] + ",");
-                    }
-                    else if (team_char_array[i] == vowels[3]) {
-                        description.add(" for " + vowel_times[3] + ",");
-                    }
-                    else if (team_char_array[i] == vowels[4]) {
-                        description.add(" for " + vowel_times[4] + ",");
-                    }
-                    else {
-                        description.add(" then I went to " + use_letter(team_char_array[i]) + ",");
-
+                    //this 'if' statement makes the test if the current character is not a vowel.
+                    int second_loop_counter = 0;
+                    if (counter == 5) {
+                        for (int j = 0; j < 5; j++) {
+                            //testing if the next character is a vowel
+                            try {
+                                if (team_char_array[i + 1] == vowels[j]) {
+                                    description.add(" then I went to " + use_letter(team_char_array[i]));
+                                } else
+                                    second_loop_counter++;
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                                description.add(" then I went to " + use_letter(team_char_array[i]) + ".");
+                                break;
+                            }
+                        }
+                        if (second_loop_counter == 5)
+                            description.add(" then I went to " + use_letter(team_char_array[i]) + ",");
                     }
                 }
 
             else {
-                description.add(" then I went to " + use_letter(team_char_array[i]) + ",");
+                int second_loop_counter = 0;
+                for (int j = 0; j < 5; j++) {
+                      //testing if the next character is a vowel
+                      try {
+                          if (team_char_array[i + 1] == vowels[j]) {
+                                description.add(" then I went to " + use_letter(team_char_array[i]));
+                          } else
+                              second_loop_counter++;
+                          }
+                      catch (ArrayIndexOutOfBoundsException e) {
+                              description.add(" then I went to " + use_letter(team_char_array[i]) + ".");
+                              break;
+                          }
+                          }
+                          if (second_loop_counter == 5)
+                            description.add(" then I went to " + use_letter(team_char_array[i]) + ",");
             }
         }
 
@@ -120,6 +167,11 @@ public class Game {
 
         return final_description;
     }
+
+
+
+
+
 
     /**
      * This answer checks to see if your guess was correct, and will respond with a message
@@ -141,7 +193,7 @@ public class Game {
     public static void main(String[] args) {
         System.out.println(team_description(team));
         Scanner scan = new Scanner(System.in);
-        System.out.println("where am I?");
+        System.out.println("Where am I?");
         String guess = scan.nextLine();
 
         System.out.println(answer_check(guess));
@@ -154,12 +206,13 @@ public class Game {
         if (response == 'Y') {
             desire_to_play = true;
             while (desire_to_play) {
+                shuffleArray(team_and_location);
                 team = team_and_location[random_team(team_and_location.length)][0];
                 description.clear();
 
                 System.out.println(team_description(team));
                 scanner_for_loop = new Scanner(System.in);
-                System.out.println("where am I?");
+                System.out.println("Where am I?");
                 guess_for_loop = scanner_for_loop.nextLine();
                 System.out.println(answer_check(guess_for_loop));
                 System.out.println("Want to play again? Y or N");
@@ -170,6 +223,3 @@ public class Game {
         }
     }
 }
-
-
-
