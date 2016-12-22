@@ -30,8 +30,7 @@ public class Game {
 
     public static int random_team(int max)
     {
-        int range = max - 1;
-        return (int)(Math.random() * range);
+        return (int) Math.floor((Math.random() * max));
     }
 
     /**
@@ -203,7 +202,7 @@ public class Game {
         System.out.println("Want to play again? Y or N");
         char response = scan.next().charAt(0);
 
-        if (response == 'Y') {
+        if (response == 'Y' || response == 'y') {
             desire_to_play = true;
             while (desire_to_play) {
                 shuffleArray(team_and_location);
@@ -218,7 +217,7 @@ public class Game {
                 System.out.println("Want to play again? Y or N");
                 response_for_loop = scanner_for_loop.next().charAt(0);
 
-                if (response_for_loop == 'N'){break;}
+                if (response_for_loop == 'N' || response_for_loop == 'n'){break;}
             }
         }
     }
